@@ -38,12 +38,16 @@ loadRoutes = ->
     ti.loadRoutes body
 
     dbOperations = []
+    processed = 0
+    total = ti.routes.length
 
     for id, route of ti.routes
       do (id, route) ->
         defer = Q.defer()
         dbOperations.push defer.promise
-
+        defer.promise.then ->
+          processed += 1
+          console.log "Routes: #{processed} / #{total}"
         basicRoute = { number: route.num, name: route.name, kind: route.transport }
         db.Route.findOneOrCreate basicRoute, basicRoute, (error, document) ->
           defer.reject(error) if error
