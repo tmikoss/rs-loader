@@ -1,0 +1,15 @@
+{
+  "name": "rs-loader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "update": "coffee update.coffee"
+  },
+  "dependencies": {
+    "coffee-script": "^1.8.0",
+    "mongoose": "^3.8.17",
+    "mongoose-find-one-or-create": "^0.2.0",
+    "q": "^1.0.1"
+  }
+}
