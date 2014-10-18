@@ -111,7 +111,7 @@ ti.toAscii = function(a, b) {
     return c || d.join("")
 };
 
-ti.loadStops = function(a, loadStopsCallback) {
+ti.loadStops = function(a) {
     a = a.split("\n");
     var b = "",
         c = "",
@@ -172,11 +172,9 @@ ti.loadStops = function(a, loadStopsCallback) {
                 x > -.015 && x < .015 && (k[o].neighbours.push(k[v].id), k[v].neighbours.push(k[o].id))
             }
         }
-
-    loadStopsCallback(ti.stops);
 };
 
-ti.loadRoutes = function(a, loadRoutesCallback) {
+ti.loadRoutes = function(a) {
     if (typeof ti.stops !== "object")
         ti.routes = a;
     else {
@@ -280,7 +278,6 @@ ti.loadRoutes = function(a, loadRoutesCallback) {
             }
         }
         ti.routes = b;
-        loadRoutesCallback(ti.routes);
     }
 };
 
