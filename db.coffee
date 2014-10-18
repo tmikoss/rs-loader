@@ -1,7 +1,7 @@
 mongoose     = require 'mongoose'
 findOrCreate = require 'mongoose-find-one-or-create'
 
-mongoose.connect 'mongodb://localhost/rs-loader'
+mongoose.connect process.env.MONGOLAB_URI || 'mongodb://localhost/rs-loader'
 
 stopSchema = new mongoose.Schema
   rsId: String
