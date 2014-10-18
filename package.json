@@ -10,6 +10,7 @@
     "coffee-script": "^1.8.0",
     "mongoose": "^3.8.17",
     "mongoose-find-one-or-create": "^0.2.0",
-    "q": "^1.0.1"
+    "q": "^1.0.1",
+    "request": "^2.45.0"
   }
 }

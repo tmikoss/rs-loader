@@ -1,47 +1,48 @@
-fs = require 'fs'
-Q  = require 'q'
+fs      = require 'fs'
+Q       = require 'q'
+request = require 'request'
+
 db = require './db'
 ti = require './ti'
 
 dbOperations = []
 
-fs.readFile "./test_data/stops.txt", "utf8", (err, data) ->
-  if err
-    console.log err
+request "http://saraksti.rigassatiksme.lv/riga/stops.txt", (error, response, body) ->
+  if error
+    console.log error
     db.disconnect()
+  else
+    ti.loadStops body, (stops) ->
+      for id, stop of stops
+        do (id, stop) ->
+          defer = Q.defer()
+          dbOperations.push defer.promise
+          db.Stop.findOneOrCreate { rsId: stop.id }, { rsId: stop.id, lat: stop.lat, lng: stop.lng, name: stop.name }, ->
+            defer.resolve()
 
-  ti.loadStops data, (stops) ->
-    for id, stop of stops
-      do (id, stop) ->
-        defer = Q.defer()
-        dbOperations.push defer.promise
-        db.Stop.findOneOrCreate { rsId: stop.id }, { rsId: stop.id, lat: stop.lat, lng: stop.lng, name: stop.name }, ->
-          defer.resolve()
+      request "http://saraksti.rigassatiksme.lv/riga/routes.txt", (error, response, body) ->
+        if error
+          console.log error
+          db.disconnect()
+        else
+          ti.loadRoutes body, (routes) ->
+            for id, route of routes
+              do (id, route) ->
+                defer = Q.defer()
+                dbOperations.push defer.promise
 
-    fs.readFile "./test_data/routes.txt", "utf8", (err, data) ->
-      if err
-        console.log err
-        db.disconnect()
+                basicRoute = { number: route.num, name: route.name, kind: route.transport }
+                db.Route.findOneOrCreate basicRoute, basicRoute, (err, doc) ->
+                  defer.reject() unless doc
 
-      ti.loadRoutes data, (routes) ->
-        for id, route of routes
-          do (id, route) ->
-            defer = Q.defer()
-            dbOperations.push defer.promise
+                  runs = []
+                  for stop in route.stops
+                    for weekdayIdx, weekdays of route.times.workdays
+                      runs[weekdayIdx] ||= { weekdays: weekdays, times: [] }
+                      runs[weekdayIdx].times.push { stop: stop, time: route.times.times.shift() }
 
-            basicRoute = { number: route.num, name: route.name, kind: route.transport }
-            db.Route.findOneOrCreate basicRoute, basicRoute, (err, doc) ->
-              console.log "processing", route.name
-              defer.reject() unless doc
+                  doc.runs = runs
+                  doc.save ->
+                    defer.resolve()
 
-              runs = []
-              for stop in route.stops
-                for weekdayIdx, weekdays of route.times.workdays
-                  runs[weekdayIdx] ||= { weekdays: weekdays, times: [] }
-                  runs[weekdayIdx].times.push { stop: stop, time: route.times.times.shift() }
-
-              doc.runs = runs
-              doc.save ->
-                defer.resolve()
-
-        Q.allSettled(dbOperations).then -> db.disconnect()
+            Q.allSettled(dbOperations).then -> db.disconnect()
