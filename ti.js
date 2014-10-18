@@ -260,8 +260,8 @@ ti.loadRoutes = function(a) {
                 ti.SERVER = true;
                 O ? (d[N] = !0, O.raw_data += ";" + u + ";" + L, (!0 || ti.SERVER) && O.routes.push(u, L)) : ( /*J.splice(L, 1),*/ --M, --L)
             }
-            var P = [u, q, e, g, h, j, l, m, n, w[s.ROUTETAG], ti.toAscii(w[s.ROUTETYPE]), w[s.COMMERCIAL], f, o, K && K.join("") || "", p, J.join(";")].join(";");
-            ++t, ti.SERVER === !0 ? b[u] = {
+            ++t
+            b[u] = {
                 id: u,
                 authority: g,
                 city: h,
@@ -271,10 +271,8 @@ ti.loadRoutes = function(a) {
                 stops: J,
                 entry: K && K.join("") || "",
                 specialDates: n.split(","),
-                times: ti.explodeTimes(a[t])
-            } : b[u] = {
-                id: u,
-                times: ti.explodeTimes(a[t])
+                times: ti.explodeTimes(a[t]),
+                direction: ti.toAscii(w[s.ROUTETYPE])
             }
         }
         ti.routes = b;

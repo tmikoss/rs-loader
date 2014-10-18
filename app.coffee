@@ -29,7 +29,7 @@ app.get '/stops', (req, res) ->
     res.json documents
 
 app.get '/routes', (req, res) ->
-  db.Route.find {}, '-_id number name kind runs.weekdays runs.times', (error, documents) ->
+  db.Route.find {}, '-_id number name kind direction runs.weekdays runs.times', (error, documents) ->
     res.json documents
 
 app.listen process.env.PORT || 3000

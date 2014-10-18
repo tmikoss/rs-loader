@@ -47,7 +47,7 @@ loadRoutes = (processingRoutes) ->
         defer.promise.then ->
           processed += 1
           console.log "Routes: #{processed} / #{total}"
-        basicRoute = { number: route.num, name: route.name, kind: route.transport }
+        basicRoute = { number: route.num, direction: route.direction, kind: route.transport }
         db.Route.findOneOrCreate basicRoute, basicRoute, (error, document) ->
           defer.reject(error) if error
 
@@ -57,6 +57,7 @@ loadRoutes = (processingRoutes) ->
               runs[weekdayIdx] ||= { weekdays: weekdays, times: {} }
               runs[weekdayIdx].times[stop] = route.times.times.shift()
 
+          document.name = route.name
           document.updatedAt = new Date
           document.runs = runs
           document.save (error) ->

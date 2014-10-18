@@ -23,7 +23,8 @@ Returns JSON array consisting of elements:
 {
     kind: String // bus, tram, etc
     name: String // ex "First stop - last stop"
-    number: String // [kind, name, number] is unique
+    number: String
+    direction: String // ex "a-b" or "b-a"
     runs: [
         {
             weekdays: String // ex "67" for weekend-only run
@@ -32,3 +33,5 @@ Returns JSON array consisting of elements:
     ]
 }
 ```
+
+[kind, direction, number] is unique.

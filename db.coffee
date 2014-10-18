@@ -13,6 +13,7 @@ stopSchema.plugin findOrCreate
 
 routeSchema = new mongoose.Schema
   number: String
+  direction: String
   name: String
   kind: String
   runs: [{
