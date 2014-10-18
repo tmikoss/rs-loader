@@ -51,8 +51,8 @@ loadRoutes = ->
           runs = []
           for stop in route.stops
             for weekdayIdx, weekdays of route.times.workdays
-              runs[weekdayIdx] ||= { weekdays: weekdays, times: [] }
-              runs[weekdayIdx].times.push { stop: stop, time: route.times.times.shift() }
+              runs[weekdayIdx] ||= { weekdays: weekdays, times: {} }
+              runs[weekdayIdx].times[stop] = route.times.times.shift()
 
           document.runs = runs
           document.save (error) ->

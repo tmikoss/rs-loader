@@ -17,10 +17,7 @@ routeSchema = new mongoose.Schema
   kind: String
   runs: [{
     weekdays: String
-    times: [{
-      stop: String
-      time: Number
-    }]
+    times: {}
   }]
 
 routeSchema.plugin findOrCreate
