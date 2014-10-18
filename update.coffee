@@ -11,8 +11,10 @@ processingRoutes = Q.defer()
 Q.allSettled([processingStops.promise, processingRoutes.promise]).then -> db.disconnect()
 
 loadStops = ->
+  console.log "Loading stops"
   request "http://saraksti.rigassatiksme.lv/riga/stops.txt", (error, response, body) ->
     if error
+      console.log error
       processingStops.reject error
       return
 
@@ -30,8 +32,10 @@ loadStops = ->
     Q.allSettled(dbOperations).then -> processingStops.resolve()
 
 loadRoutes = ->
+  console.log "Loading routes"
   request "http://saraksti.rigassatiksme.lv/riga/routes.txt", (error, response, body) ->
     if error
+      console.log error
       processingRoutes.reject error
       return
 
