@@ -5,12 +5,7 @@ request = require 'request'
 db = require './db'
 ti = require './ti'
 
-processingStops  = Q.defer()
-processingRoutes = Q.defer()
-
-Q.allSettled([processingStops.promise, processingRoutes.promise]).then -> db.disconnect()
-
-loadStops = ->
+loadStops = (processingStops) ->
   console.log "Loading stops"
   request "http://saraksti.rigassatiksme.lv/riga/stops.txt", (error, response, body) ->
     if error
@@ -31,7 +26,7 @@ loadStops = ->
 
     Q.allSettled(dbOperations).then -> processingStops.resolve()
 
-loadRoutes = ->
+loadRoutes = (processingRoutes) ->
   console.log "Loading routes"
   request "http://saraksti.rigassatiksme.lv/riga/routes.txt", (error, response, body) ->
     if error
@@ -62,11 +57,33 @@ loadRoutes = ->
               runs[weekdayIdx] ||= { weekdays: weekdays, times: {} }
               runs[weekdayIdx].times[stop] = route.times.times.shift()
 
+          document.updatedAt = new Date
           document.runs = runs
           document.save (error) ->
             if error then defer.reject(error) else defer.resolve()
 
       Q.allSettled(dbOperations).then -> processingRoutes.resolve()
 
-processingStops.promise.then loadRoutes
-loadStops()
+
+finished = -> db.disconnect()
+
+db.Route.findOne({}).sort({ updatedAt: -1 }).findOne (error, document) ->
+  mustUpdate = if !document
+    true
+  else if document.updatedAt
+    age = new Date() - document.updatedAt
+    ageHours = age / 1000 / 60 / 60
+    ageHours > (7 * 24) - 1
+  else
+    true
+
+  if mustUpdate
+    processingStops  = Q.defer()
+    processingRoutes = Q.defer()
+
+    Q.allSettled([processingStops.promise, processingRoutes.promise]).then finished
+
+    processingStops.promise.then -> loadRoutes(processingRoutes)
+    loadStops(processingStops)
+  else
+    finished()

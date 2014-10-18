@@ -19,6 +19,7 @@ routeSchema = new mongoose.Schema
     weekdays: String
     times: {}
   }]
+  updatedAt: Date
 
 routeSchema.plugin findOrCreate
 
