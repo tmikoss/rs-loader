@@ -1,6 +1,28 @@
+db     = require './db'
+fs     = require 'fs'
+marked = require 'marked'
+
 app = require('express')()
 
-db = require './db'
+index = ""
+
+fs.readFile './README.md', 'utf8', (error, markdown) ->
+  index = """
+    <html>
+      <head>
+        <title>RS-API</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+      </head>
+      <body>
+        <div class='container'>
+          #{marked markdown}
+        </div>
+      </body>
+    </html>
+  """
+
+app.get '/', (req, res) ->
+  res.send index
 
 app.get '/stops', (req, res) ->
   db.Stop.find {}, '-_id rsId name lat lng', (error, documents) ->

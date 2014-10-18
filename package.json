@@ -10,6 +10,7 @@
   "dependencies": {
     "coffee-script": "^1.8.0",
     "express": "^4.9.8",
+    "marked": "^0.3.2",
     "mongoose": "^3.8.17",
     "mongoose-find-one-or-create": "^0.2.0",
     "q": "^1.0.1",
